@@ -5,11 +5,15 @@
  *      Author: rduclos
  */
 
+
+#include "../include/Instance.h"
+#include <vector>
+
+
+
 #ifndef SCE_DYNAMIC_H_
 #define SCE_DYNAMIC_H_
 
-#include <vector>
-#include "../include/Instance.h"
 
 using namespace std;
 
@@ -17,7 +21,7 @@ class Dynamic {
 public:
 	Dynamic();
 	virtual ~Dynamic();
-	int solve(Instance* instance, int * price, vector<item*> & newPattern);
+	int solve(Instance* instance, double * price, vector<item*> & newPattern);
 };
 
 #endif /* SCE_DYNAMIC_H_ */

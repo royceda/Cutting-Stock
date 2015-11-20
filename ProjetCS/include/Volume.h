@@ -15,12 +15,14 @@ class Volume {
 	private :
 	int _g;
 	double _d;
+	vector<int> _solution;
+
 
 public:
 	Volume();
 	virtual ~Volume();
-	void solve(double alpha, Instance & inst);
-	vector<int> & greedy(Instance* inst);
+	void solve(double alpha, Instance * inst);
+	int greedy(Instance* inst);
 };
 
 #endif /* SCE_VOLUME_H_ */
