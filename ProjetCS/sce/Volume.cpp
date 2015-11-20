@@ -40,22 +40,57 @@ int Volume::greedy(Instance* inst) {
 	return remaining.size();
 }
 
+void Volume::computeX(double alpha, vector<double> newPattern) {
+	for (int i = 0; i < (int) _solution.size(); i++) {
+		_solution[i] = _solution[i] * alpha + newPattern[i] * (1 - alpha);
+	}
+}
+
+void Volume::violation(Instance* inst) {
+	int qty = inst->qty();
+	for (int i = 0; i < qty; i++) {
+		_subGradient[i] = 1 - _solution[i];
+	}
+}
+
+double Volume::LB(Instance* inst, vector<double> & sol){
+	int qty = inst->qty();
+	double sum = 0;
+	double* comple = new double[qty];
+	double temp =0;
+	double L =0;
+	for(int i =0; i < qty; i++){
+		sum += _subGradient[i];
+		comple[i] = 1-_subGradient[i];
+		temp += comple[i] * sol[i];
+		L += sum + temp;
+	}
+	return L;
+}
+
 void Volume::solve(double alpha, Instance * inst) {
 	int qty = inst->qty();
-	vector<item*> knpSol;
+	vector<double> knpSol;
 	knpSol.reserve(qty);
-	double * price = new double[qty];
+	_subGradient = new double[qty];
 
 	greedy(inst);
 
 	for (int i = 0; i < qty; i++) {
-		price[i] = (double) inst->data()[i]->_width / (double) inst->width();
+		_subGradient[i] = (double) inst->data()[i]->_width
+				/ (double) inst->width();
 	}
 
 	Dynamic* knap = new Dynamic();
 
-	knap->solve(inst, price, knpSol);
+	knap->solve(inst, _subGradient, knpSol);
 
+
+
+
+	computeX(alpha, knpSol);
+
+	violation(inst);
 
 }
 

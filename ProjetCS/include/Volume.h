@@ -15,13 +15,17 @@ class Volume {
 	private :
 	int _g;
 	double _d;
-	vector<int> _solution;
-
+	vector<double> _solution;
+	double* _subGradient;
 
 public:
 	Volume();
 	virtual ~Volume();
 	void solve(double alpha, Instance * inst);
+	void computeX(double alpha, vector<double> newPattern);
+	void violation(Instance* inst);
+	double LB(Instance* inst, vector<double> & sol);
+
 	int greedy(Instance* inst);
 };
 

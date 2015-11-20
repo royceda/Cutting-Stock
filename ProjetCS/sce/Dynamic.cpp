@@ -17,7 +17,7 @@ Dynamic::~Dynamic() {
 }
 
 
-int Dynamic::solve(Instance* instance, double* price, vector<item*> & newPattern) {
+int Dynamic::solve(Instance* instance, double* price, vector<double> & newPattern) {
 	int qty = instance->qty();
 	int width = instance->width();
 	double** tab = new double*[qty];
@@ -48,7 +48,7 @@ int Dynamic::solve(Instance* instance, double* price, vector<item*> & newPattern
 	width--;
 	for (int i = qty-1; i > 0; i--) {
 		if (tab[i-1][width] != tab[i][width]) {
-			newPattern.push_back(instance->data()[i-1]);
+			newPattern.push_back(instance->data()[i-1]->_id);
 			profit += price[i-1];
 			width -= instance->data()[i-1]->_width;
 
@@ -56,7 +56,7 @@ int Dynamic::solve(Instance* instance, double* price, vector<item*> & newPattern
 		if (width == 0)
 			break;
 	}
-
+/*
 	vector<item*>::iterator it;
 	int tot = 0;
 	cout << "newPattern : ";
@@ -65,9 +65,8 @@ int Dynamic::solve(Instance* instance, double* price, vector<item*> & newPattern
 		cout << (*it)->_id << "- " ;
 	}
 	cout << "Largeur : " << tot << endl;
-
+*/
 	return profit;
 
-//	return 0;
 }
 
