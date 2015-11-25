@@ -7,9 +7,15 @@
 
 #include "../include/Volume.h"
 
-Volume::Volume() {
-	// TODO Auto-generated constructor stub
+Volume::Volume(){}
 
+Volume::Volume(Instance* inst) {
+	// TODO Auto-generated constructor stub
+	int qty = inst->qty();
+	_pi = new double[qty];
+	_piChapo = new double[qty];
+	_subGradiant = new double[qty];
+	_solution.reserve(qty);
 }
 
 Volume::~Volume() {
@@ -17,6 +23,7 @@ Volume::~Volume() {
 }
 
 int Volume::greedy(Instance* inst) {
+
 
 	vector<int> remaining;
 	int qty = inst->qty();
@@ -46,22 +53,42 @@ void Volume::computeX(double alpha, vector<double> newPattern) {
 	}
 }
 
-void Volume::violation(Instance* inst) {
+bool Volume::stopCondition(Instance* inst) {
+	double epsilon = 0.0001;
 	int qty = inst->qty();
 	for (int i = 0; i < qty; i++) {
-		_subGradient[i] = 1 - _solution[i];
+		if ((-epsilon < _subGradiant[i]) && (_subGradiant[i] < epsilon))
+			return true;
+	}
+	return false;
+}
+
+void Volume::violation(Instance* inst) {
+	int qty = inst->qty();
+	double st;
+	int theta = 1; //between 0 and 2
+	for (int i = 0; i < qty; i++) {
+		_subGradiant[i] = 1 - _solution[i];
+	}
+	double norm = 0.0;
+	for (int i = 0; i < qty; i++) {
+		norm += (_subGradiant[i] * _subGradiant[i]);
+	}
+	st = theta * (_UB - _LB) / norm;
+	for (int i = 0; i < qty; i++) {
+		_pi[i] = _piChapo[i] + st * _subGradiant[i];
 	}
 }
 
-double Volume::LB(Instance* inst, vector<double> & sol){
+double Volume::LB(Instance* inst, vector<double> & sol) {
 	int qty = inst->qty();
 	double sum = 0;
 	double* comple = new double[qty];
-	double temp =0;
-	double L =0;
-	for(int i =0; i < qty; i++){
-		sum += _subGradient[i];
-		comple[i] = 1-_subGradient[i];
+	double temp = 0;
+	double L = 0;
+	for (int i = 0; i < qty; i++) {
+		sum += _pi[i];
+		comple[i] = 1 - _pi[i];
 		temp += comple[i] * sol[i];
 		L += sum + temp;
 	}
@@ -70,27 +97,53 @@ double Volume::LB(Instance* inst, vector<double> & sol){
 
 void Volume::solve(double alpha, Instance * inst) {
 	int qty = inst->qty();
-	vector<double> knpSol;
-	knpSol.reserve(qty);
-	_subGradient = new double[qty];
+	_pi = new double[qty];
 
-	greedy(inst);
+	// x zero
+	_UB = greedy(inst);
 
+	// pi zero
 	for (int i = 0; i < qty; i++) {
-		_subGradient[i] = (double) inst->data()[i]->_width
-				/ (double) inst->width();
+		_pi[i] = (double) inst->data()[i]->_width / (double) inst->width();
 	}
 
 	Dynamic* knap = new Dynamic();
 
-	knap->solve(inst, _subGradient, knpSol);
+	cout<<"Dynamic";
+	// z zero
+	knap->solve(inst, _pi, _solution);
 
-
-
-
-	computeX(alpha, knpSol);
+	// LB = l chapeau
+	_LB = LB(inst, _solution);
+	// pi chapeau
+	for (int i = 0; i < qty; i++) {
+		_piChapo[i] = _pi[i];
+	}
 
 	violation(inst);
+
+	computeX(alpha, _solution);
+
+	while (!stopCondition(inst)) {
+		//cout<<"In the wile\n";
+		knap->solve(inst, _pi, _solution);
+		int lowerBound = LB(inst, _solution);
+		if (_LB <= lowerBound) {
+			_LB = lowerBound;
+			for (int i = 0; i < qty; i++) {
+				_piChapo[i] = _pi[i];
+			}
+		}
+		violation(inst);
+
+		computeX(alpha, _solution);
+
+	}
+
+	for(int i =0; i<qty; i++){
+		cout<<"g["<<i<<"] = "<< _subGradiant[i]<<"\n";
+	}
+	cout<<" \n finished\n";
 
 }
 
