@@ -19,9 +19,9 @@ using namespace std;
 
 class Dynamic {
 public:
-	Dynamic();
-	virtual ~Dynamic();
-	int solve(Instance* instance, double * price, vector<double> & newPattern);
+    Dynamic();
+    virtual ~Dynamic();
+    vector<int> solve(Instance* instance, double * price);
 };
 
 #endif /* SCE_DYNAMIC_H_ */

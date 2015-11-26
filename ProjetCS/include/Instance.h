@@ -18,28 +18,29 @@ using namespace std;
 #include <iostream>
 
 struct item {
-	int _id;
-	int _width;
-	item(int id, int width){
-		_id =id;
-		_width = width;
-	}
+    int _id;
+    int _width;
+
+    item(int id, int width) {
+        _id = id;
+        _width = width;
+    }
 };
 
 class Instance {
 private:
-	int _itemQty;
-	vector<item*> _data;
-	int _masterWidth;
+    int _itemQty;
+    vector<item*> _data;
+    int _masterWidth;
 public:
-	Instance();
-	virtual ~Instance();
-	void generate();
-	void generate(int itemQty, int W);
-	vector<item*> & data();
-	int qty();
-	int width();
-	friend ostream & operator <<(ostream & os, Instance & instance);
+    Instance();
+    virtual ~Instance();
+    void generate();
+    void generate(int itemQty, int W);
+    vector<item*> & data();
+    int qty();
+    int width();
+    friend ostream & operator<<(ostream & os, Instance & instance);
 };
 
 
