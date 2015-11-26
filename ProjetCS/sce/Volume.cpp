@@ -60,6 +60,9 @@ int Volume::greedy(Instance* inst) {
     return remaining.size();
 }
 
+
+//sous gradiant?
+//pi*a +(c-pi*A)Z
 void Volume::computeX(double alpha, vector<double> newPattern) {
     for (int i = 0; i < (int) _solution.size(); i++) {
         _solution[i] = _solution[i] * alpha + newPattern[i] * (1 - alpha);
@@ -94,6 +97,8 @@ void Volume::violation(Instance* inst) {
     }
 }
 
+
+//LB = Pi + (1 - Pi)*Z
 double Volume::LB(Instance* inst, vector<double> & sol) {
     int qty = inst->qty();
     double sum = 0.0;
@@ -110,7 +115,7 @@ double Volume::LB(Instance* inst, vector<double> & sol) {
 }
 
 void Volume::solve(double alpha, Instance * inst) {
-    
+
     int qty = inst->qty();
     _pi = new double[qty];
 
@@ -118,6 +123,7 @@ void Volume::solve(double alpha, Instance * inst) {
     _UB = greedy(inst);
 
     // pi zero
+    // pi zero =  item_size/bin_size
     for (int i = 0; i < qty; i++) {
         _pi[i] = (double) inst->data()[i]->_width / (double) inst->width();
     }
@@ -141,11 +147,21 @@ void Volume::solve(double alpha, Instance * inst) {
     computeX(alpha, _solution);
     int iteration = 0;
     while (/*!stopCondition(inst)*/iteration<5) {
+
         newPattern.clear();
-        newPattern = knap->solve(inst, _pi);
+        // calcul du argmin
+        newPattern = knap->solve(inst, _pi); //c'est quand on utilise  newPattern
+
+        //En fait,
+        // _solution = knap->solve(inst, _pi);
+        // attention _solution est un vector<double>
+
+
+        // calcul de L^t
         int lowerBound = LB(inst, _solution);
         if (_LB <= lowerBound) {
             _LB = lowerBound;
+            //remplissage du nouveaux pi
             for (int i = 0; i < qty; i++) {
                 _piChapo[i] = _pi[i];
             }
@@ -163,4 +179,3 @@ void Volume::solve(double alpha, Instance * inst) {
     cout << " \n finished\n";
 
 }
-
