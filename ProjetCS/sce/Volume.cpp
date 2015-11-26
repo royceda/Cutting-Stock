@@ -159,7 +159,8 @@ void Volume::solve(double alpha, Instance * inst) {
 
         // calcul de L^t
         int lowerBound = LB(inst, _solution);
-        if (_LB <= lowerBound) {
+
+        if (_LB <= lowerBound) { //_LB + epsilon
             _LB = lowerBound;
             //remplissage du nouveaux pi
             for (int i = 0; i < qty; i++) {
@@ -172,10 +173,14 @@ void Volume::solve(double alpha, Instance * inst) {
         iteration ++;
         cout<<"iteration"<<iteration<<"\n";
             for (int i = 0; i < qty; i++) {
-        cout << "g[" << i << "] = " << _subGradiant[i] << "\n";
-    }
-    }
+                cout << "g[" << i << "] = " << _subGradiant[i] << "\n";
+            }
+            //Calcul de la solution primal x^t
+            //MAJ de la solution primal courante
+            //ajout de Z (_solution) au Bundle
+            //Retour à l'étape 2
+        }
 
-    cout << " \n finished\n";
+cout << " \n finished\n";
 
 }
