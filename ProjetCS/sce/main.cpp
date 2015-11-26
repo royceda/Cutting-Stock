@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, char** argv) {
     cout <<"ljfhzekfh\n";
     Instance* inst = new Instance();
-    inst->generate(50, 200);
+    inst->generate(5, 13);
     //cout << (*inst) << endl;
 
     Volume* volume = new Volume(inst);

@@ -27,22 +27,36 @@ int Volume::greedy(Instance* inst) {
     vector<int> remaining;
     int qty = inst->qty();
     int W = inst->width();
+    std::cout<<"W="<<W<<"\n";
+    for (int i = 0; i < qty; i++) {
+        cout<<"item "<<i<<" : "<<inst->data()[i]->_width <<"\n";
+    }
+
     remaining.push_back(W);
     bool done = false;
     for (int i = 0; i < qty; i++) {
-        for (int j = 0; j < (int) remaining.size(); j++) {
-            if (remaining[j] - inst->data()[i]->_width >= 0) {
+        int j = 0;
+        done = false;
+        while((j<remaining.size())&&(!done)){
+            cout<<i<<" "<<j<<" : "<<(remaining[j] - inst->data()[i]->_width)<<"?"<<((remaining[j] - inst->data()[i]->_width) >= 0)<<"\n";
+            if ((remaining[j] - inst->data()[i]->_width) >= 0) {
                 remaining[j] -= inst->data()[i]->_width;
+                cout<<"mmmmmmmmm\n";
                 _solution[i] = j;
                 done = true;
-                break;
             }
+            j++;
         }
         if (!done) {
+            cout<<"NEEEEEW\n";
             remaining.push_back(W - inst->data()[i]->_width);
-            _solution[i] = (int) remaining.size();
+            _solution[i] = remaining.size() - 1;
         }
     }
+    for (int i = 0; i < qty; i++) {
+        cout<<"sol["<<i<<"]="<<_solution[i]<<"\n";
+    }
+
     return remaining.size();
 }
 
@@ -68,6 +82,7 @@ void Volume::violation(Instance* inst) {
     int theta = 1; //between 0 and 2
     for (int i = 0; i < qty; i++) {
         _subGradiant[i] = 1 - _solution[i];
+        cout<<"vio["<<i<<"]="<<_solution[i]<<"\n";
     }
     double norm = 0.0;
     for (int i = 0; i < qty; i++) {
@@ -124,9 +139,8 @@ void Volume::solve(double alpha, Instance * inst) {
     violation(inst);
 
     computeX(alpha, _solution);
-
-    while (!stopCondition(inst)) {
-        //cout<<"In the wile\n";
+    int iteration = 0;
+    while (/*!stopCondition(inst)*/iteration<5) {
         newPattern.clear();
         newPattern = knap->solve(inst, _pi);
         int lowerBound = LB(inst, _solution);
@@ -139,12 +153,13 @@ void Volume::solve(double alpha, Instance * inst) {
         violation(inst);
 
         computeX(alpha, _solution);
-
-    }
-
-    for (int i = 0; i < qty; i++) {
+        iteration ++;
+        cout<<"iteration"<<iteration<<"\n";
+            for (int i = 0; i < qty; i++) {
         cout << "g[" << i << "] = " << _subGradiant[i] << "\n";
     }
+    }
+
     cout << " \n finished\n";
 
 }
