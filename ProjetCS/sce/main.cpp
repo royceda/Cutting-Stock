@@ -12,16 +12,16 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+    cout <<"ljfhzekfh\n";
+    Instance* inst = new Instance();
+    inst->generate(50, 200);
+    //cout << (*inst) << endl;
 
-	Instance* inst = new Instance();
-	inst->generate(50, 200);
-	//cout << (*inst) << endl;
-
-	Volume* volume = new Volume(inst);
-	volume->solve(0.1, inst);
+    Volume* volume = new Volume(inst);
+    volume->solve(0.1, inst);
 
 
-	return 0;
+    return 0;
 }
 
 
