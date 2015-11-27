@@ -16,9 +16,9 @@ Dynamic::~Dynamic() {
     // TODO Auto-generated destructor stub
 }
 
-vector<int> Dynamic::solve(Instance* instance, double* price) {
+vector<double> Dynamic::solve(Instance* instance, vector<double> price) {
     int qty = instance->qty();
-    vector<int> newPattern;
+    vector<double> newPattern;
     int width = instance->width();
     double** tab = new double*[qty];
 

@@ -4,7 +4,7 @@
  *  Created on: 20 nov. 2015
  *      Author: rduclos
  */
-
+/*
 #include "../include/Volume.h"
 
 Volume::Volume() {
@@ -56,7 +56,6 @@ int Volume::greedy(Instance* inst) {
     for (int i = 0; i < qty; i++) {
         cout<<"sol["<<i<<"]="<<_solution[i]<<"\n";
     }
-    K = remaining.size();
     return remaining.size();
 }
 
@@ -146,7 +145,7 @@ void Volume::solve(double alpha, Instance * inst) {
 
     computeX(alpha, _solution);
     int iteration = 0;
-    while (/*!stopCondition(inst)*/iteration<5) {
+    while (!stopCondition(inst)iteration<5) {
 
         newPattern.clear();
         // calcul du argmin
@@ -184,3 +183,4 @@ void Volume::solve(double alpha, Instance * inst) {
 cout << " \n finished\n";
 
 }
+*/

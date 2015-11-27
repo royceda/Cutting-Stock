@@ -7,18 +7,21 @@ CPP_SRCS += \
 ../sce/Dynamic.cpp \
 ../sce/Instance.cpp \
 ../sce/Volume.cpp \
+../sce/Volume2.cpp \
 ../sce/main.cpp 
 
 OBJS += \
 ./sce/Dynamic.o \
 ./sce/Instance.o \
 ./sce/Volume.o \
+./sce/Volume2.o \
 ./sce/main.o 
 
 CPP_DEPS += \
 ./sce/Dynamic.d \
 ./sce/Instance.d \
 ./sce/Volume.d \
+./sce/Volume2.d \
 ./sce/main.d 
 
 
