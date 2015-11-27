@@ -56,7 +56,7 @@ int Volume::greedy(Instance* inst) {
     for (int i = 0; i < qty; i++) {
         cout<<"sol["<<i<<"]="<<_solution[i]<<"\n";
     }
-
+    K = remaining.size();
     return remaining.size();
 }
 

@@ -38,6 +38,9 @@ void Instance::generate(int itemQty, int W) {
         qty--;
     }
 }
+int Instance::K(){
+    return _K;
+}
 
 vector<item*> & Instance::data() {
     return _data;

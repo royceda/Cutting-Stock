@@ -32,6 +32,7 @@ private:
     int _itemQty;
     vector<item*> _data;
     int _masterWidth;
+    int _K;
 public:
     Instance();
     virtual ~Instance();
@@ -40,6 +41,7 @@ public:
     vector<item*> & data();
     int qty();
     int width();
+    int K();
     friend ostream & operator<<(ostream & os, Instance & instance);
 };
 
