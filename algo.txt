@@ -1,0 +1,39 @@
+Variables : 
+x vector<double> représentant le nombre de fois que chaque objet est représenté dans la solution globale
+z vector<double> représentant le nombre de fois que chaque objet est représenté dans un bin
+Pi vector<double>
+alpha donné in ]0,1[
+
+Initialisation : 
+fonction greedy -> UB
+Pi(0) = (wi/W)
+PiChapo = Pi(0)
+LBChapo = LB(0) = 0
+
+fonction Knap(Pi(0)) -> z(0)
+
+x(0) = (1-alpha)z(0)
+g(0) = 1 - x(0)
+
+Récurrence t : 
+
+Tant que (Pi(t)*(1-x(t))) > epsilon{
+	
+	z(t) = knap(Pi(t-1))
+	x(t) = alpha*x(t-1) + (1 - alpha)*z(t)
+	LB(t) = Pi(t) + (1 - Pi(t))*z(t)
+	Si LB(t) > LBChapo{
+		LBChapo = LB(t)
+		PiChapo = Pi(t)
+	}
+	g(t) = 1 - x(t)
+	Pi(t+1) = PiChapo + S(t)*g(t)    avec   S(t) = (UB-LB(t))/norm(g(t))^2
+
+	t++;
+}
+
+
+
+
+
+
