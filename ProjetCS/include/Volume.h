@@ -10,7 +10,7 @@
 #include "Dynamic.h"
 
 using namespace std;
-    
+
 class Volume {
 private:
     int _g;
@@ -18,8 +18,8 @@ private:
     vector<double> _solution;
     double* _pi;
     double* _piChapo;
-    double _LB;
-    int _UB;
+    double  _LB;
+    int     _UB;
     double* _subGradiant;
 
 public:

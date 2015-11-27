@@ -21,6 +21,7 @@ vector<int> Dynamic::solve(Instance* instance, double* price) {
     vector<int> newPattern;
     int width = instance->width();
     double** tab = new double*[qty];
+
     for (int i = 0; i < qty; i++) {
         tab[i] = new double[width];
         for (int j = 0; j < width; j++) {
@@ -69,4 +70,3 @@ vector<int> Dynamic::solve(Instance* instance, double* price) {
     return newPattern;
 
 }
-

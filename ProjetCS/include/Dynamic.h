@@ -5,14 +5,11 @@
  *      Author: rduclos
  */
 
+#ifndef SCE_DYNAMIC_H_
+#define SCE_DYNAMIC_H_
 
 #include "../include/Instance.h"
 #include <vector>
-
-
-
-#ifndef SCE_DYNAMIC_H_
-#define SCE_DYNAMIC_H_
 
 
 using namespace std;
