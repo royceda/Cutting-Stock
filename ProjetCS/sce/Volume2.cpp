@@ -59,13 +59,16 @@ double Volume2::greedy() {
 	return remaining.size();
 }
 
+
+//compute (UB-LB(t))/norm(g(t))^2
 double Volume2::step(int theta) {
 	double norm = 0.0;
 	for (int i = 0; i < _qty; i++) {
 		norm += (_subGradiant[i] * _subGradiant[i]);
 	}
-	return theta * (_UB - _LB) / (norm * norm);
+	return theta * (_UB - _LB) / (norm);
 }
+
 
 double Volume2::stop() {
 	double violation = 0;
@@ -75,27 +78,33 @@ double Volume2::stop() {
 	return violation;
 }
 
+
+
 void Volume2::solve(double alpha, double epsilon, int theta) {
 
 	cout << "hello" << endl;
-
 	_UB = greedy();
 	cout << " UB : " << _UB << endl << endl;
 	int W = _inst->width();
 	Dynamic* knap = new Dynamic();
+
+	//pi(0) = wi/W
 	for (int i = 0; i < _qty; i++) {
 		_pi[i] = (double) _inst->data()[i]->_width / (double) W;
 	}
 
+	//compute z(0)
 	_newPattern = knap->solve(_inst, _pi);
 
+
 	vector<double>::iterator it;
-	cout << "premier pattern : ";
+	cout << "premier pattern : " ;
 	for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
 		cout << *it << ", ";
 		_x[*it] += 1;
 	}
 	cout << endl;
+
 	for (int i = 0; i < _qty; i++) {
 		_subGradiant[i] = 1 - _x[i];
 	}
@@ -108,6 +117,7 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 		_pi[i] = _pi[i] + stepA * _subGradiant[i];
 	}
 	cout << endl;
+
 	int compteur = 0;
 	double arret = stop();
 	for (int i = 0; i < _qty; i++) {
@@ -117,22 +127,31 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 	}
 	cout << "Premier LB =  " << _LB << endl << endl;
 	_LB = 0;
+
+
+	//Recurrence
 	while (arret > epsilon && compteur < 30) {
 
 		_LB = 0;
 		_newPattern = knap->solve(_inst, _pi);
 		cout << "nouveau pattern : " << endl;
 		vector<double>::iterator it;
+
+		//x(t) = alpha*x(t-1) +(1-Pi(t))*z(t)
 		for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
 			cout << *it << ", ";
 			_x[*it] += alpha * _x[*it] + (1 - alpha);
 		}
 		cout << endl;
+
+		//MAJ LB
 		for (int i = 0; i < _qty; i++) {
 			if (_x[i] > 0) {
 				_LB += _pi[i] + (1 - _pi[i]) * (_x[i]);
 			}
 		}
+
+		//test et MAJ de LB
 		if (_LB > _bestLB) {
 			cout << "AMELIORATION, LB =  " << _LB << endl << endl;
 			_bestLB = _LB;
@@ -140,13 +159,18 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 				_bestPi[i] = _pi[i];
 			}
 		}
+
+		//g(t) = 1 - x(t)
 		for (int i = 0; i < _qty; i++) {
 			cout << "x[" << i + 1 << "]" << _x[i] << " ";
 			_subGradiant[i] = 1 - _x[i];
 		}
+
 		cout << endl;
 		stepA = step(theta);
 		cout << "Pi : ";
+
+		//Pi(t+1) = PiChapo + S(t)*g(t)    with   S(t) = (UB-LB(t))/norm(g(t))^2
 		for (int i = 0; i < _qty; i++) {
 			cout << _pi[i] << " ,";
 			_pi[i] = _bestPi[i] + stepA * _subGradiant[i];
@@ -158,4 +182,3 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 	}
 
 }
-
