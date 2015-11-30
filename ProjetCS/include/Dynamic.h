@@ -18,7 +18,7 @@ class Dynamic {
 public:
     Dynamic();
     virtual ~Dynamic();
-    vector<double> solve(Instance* instance,vector<double> price);
+    vector<double> solve(Instance* instance,vector<double> & price);
 };
 
 #endif /* SCE_DYNAMIC_H_ */

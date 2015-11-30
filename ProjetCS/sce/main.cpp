@@ -12,16 +12,15 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    cout <<"ljfhzekfh\n";
     Instance* inst = new Instance();
-    inst->generate(5, 13);
+    inst->generate(100, 13);
     //cout << (*inst) << endl;
 
     //Volume* volume = new Volume(inst);
    // volume->solve(0.1, inst);
 
     Volume2* volume2 = new Volume2(inst);
-    volume2->solve(0.2,0.001,1);
+    volume2->solve(0.1,0.001,1);
 
     return 0;
 }
