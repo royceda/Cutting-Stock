@@ -23,11 +23,17 @@ SubGrad::SubGrad(Instance* inst) {
 	_LB = 0;
 	_bestLB = 0;
 	_UB = 0;
+
+	_n = 1000;
+
 	for (int i = 0; i < qty; i++) {
 		_x[i] = 0;
 		_bestPi[i] = 0;
 	}
+	_UB  = greedy();
+	cout << "UB: "<< _UB << endl;
 }
+
 
 double SubGrad::greedy() {
 	vector<int> remaining;
@@ -75,67 +81,60 @@ double SubGrad::stop() {
 }
 
 
+void SubGrad::compute_Pi(double step){
+	for (int i = 0; i < _qty; i++) {
+		cout << _pi[i] << " ,";
+		//evolution lente: pb de sub grad ???
+		_pi[i] = _pi[i] + step * _subGradiant[i];
+	}
 
-void SubGrad::solve(double alpha, double epsilon, int ) {
-	//Initialisation (Normalement dans constructor)
-	cout << "Begin " << endl;
-	_UB  = greedy();
-	_LB = 0;
-	cout << "UB: "<< _UB << endl;
 
-	int W = _inst_>width();
-	Dynamic *knap = new Dynamic();
+void SubGrad::compute_g(){
+	for (int i = 0; i < _qty; i++) {
+		cout << "x[" << i + 1 << "]" << _x[i] << " ";
+		_subGradiant[i] = 1 - _x[i];
+	}
+	cout << endl;
+}
 
-	//init du Pi[0]
+
+void SubGrad::init_Pi(){
 	for (int i = 0; i < _qty; i++) {
 		_pi[i] = (double) _inst->data()[i]->_width / (double) W;
 	}
+}
 
-	//init z(0)
-	_newPattern = knap->solve(_inst, _pi);
+vector<double> SubGrad::solve(double alpha, double epsilon, int ) {
+	//Initialisation (Normalement dans constructor)
+	cout << "Begin " << endl;
 
+	int W = _inst->width();
+	Dynamic *knap = new Dynamic();
+
+	//init du Pi[0]
+	init_Pi();
 
 	int k = 0;
-	while(k < 1000){
+	while(k < _n){
 		//Une iteration k
-
-
 
 		//Resolution de l'instance par (KP)
 		_newPattern = knap->solve(_inst, _pi);
 		cout << "New pattern:  " <<endl
 
-		//ce qui va différer des volumes
-
-		for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
-			cout << *it << ", ";
-			_x[*it] += alpha * _x[*it] + (1 - alpha);
-		}
-		cout << endl;
-
-
+		//La suite va différer des volumes mais la structure est identique
 
 		//Calcul du sous-gradiant g[k] = (1 - x[k]) (vecteur)
-		for (int i = 0; i < _qty; i++) {
-			cout << "x[" << i + 1 << "]" << _x[i] << " ";
-			_subGradiant[i] = 1 - _x[i];
-		}
+		compute_g();
 
 		//Calcul du pas s[k]
 		stepA = step(theta);
 
 		//Calcul du nouveau Pi[k]
-		for (int i = 0; i < _qty; i++) {
-			cout << _pi[i] << " ,";
-			//evolution lente: pb de sub grad ???
-			_pi[i] = _pii[i] + stepA * _subGradiant[i];
-		}
+		compute_Pi(stepA);
 
 		k++;
 	}
-}
-
-//on renvoi la meilleur solution c'est à dire x[n] ( par convergence)
-return x;
-
+	//on renvoi la meilleur solution c'est à dire x[n] ( par convergence)
+	return _x;
 }
