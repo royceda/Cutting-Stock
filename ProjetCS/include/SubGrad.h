@@ -9,10 +9,9 @@ class SubGrad {
 
 private:
     int            _g;
-    double         _d;
     vector<double> _solution;
     double*        _pi;
-    double*        _piChapo;
+    double*        _bestPi;
     double         _LB;
     int            _UB;
     double*        _subGradiant;
@@ -32,14 +31,6 @@ public:
     int greedy(Instance* inst); //borne sup par algo glouton
     double step(int theta); //calcul d'un pas pour le nouveau Pi
     void compute_Pi(double step); //Calcul du nouveau Pi
-
-
-
-//    void computeX(double alpha, vector<double> newPattern);
-//    void violation(Instance* inst);
-
-//    bool stopCondition(Instance* inst);
-
 
 };
 #endif /* SCE_GRADIANT_H_ */
