@@ -70,6 +70,8 @@ double Volume2::step(int theta) {
 }
 
 
+
+//violation de contraintes
 double Volume2::stop() {
 	double violation = 0;
 	for (int i = 0; i < _qty; i++) {
@@ -80,7 +82,7 @@ double Volume2::stop() {
 
 
 
-void Volume2::solve(double alpha, double epsilon, int theta) {
+void Volume2::solve(double alpha, double epsilon, int ) {
 
 	cout << "hello" << endl;
 	_UB = greedy();
@@ -97,6 +99,7 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 	_newPattern = knap->solve(_inst, _pi);
 
 
+//compute x(t)
 	vector<double>::iterator it;
 	cout << "premier pattern : " ;
 	for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
@@ -167,15 +170,19 @@ void Volume2::solve(double alpha, double epsilon, int theta) {
 		}
 
 		cout << endl;
+
+
 		stepA = step(theta);
 		cout << "Pi : ";
 
 		//Pi(t+1) = PiChapo + S(t)*g(t)    with   S(t) = (UB-LB(t))/norm(g(t))^2
 		for (int i = 0; i < _qty; i++) {
 			cout << _pi[i] << " ,";
+			//evolution lente: pb de sub grad ???
 			_pi[i] = _bestPi[i] + stepA * _subGradiant[i];
 		}
 		cout << endl;
+
 		compteur++;
 		arret = stop();
 		cout << "stop :" << arret << endl;
