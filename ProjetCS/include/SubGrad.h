@@ -8,14 +8,14 @@ using namespace std;
 class SubGrad {
 
 private:
-    int _g;
-    double _d;
+    int            _g;
+    double         _d;
     vector<double> _solution;
-    double* _pi;
-    double* _piChapo;
-    double  _LB;
-    int     _UB;
-    double* _subGradiant;
+    double*        _pi;
+    double*        _piChapo;
+    double         _LB;
+    int            _UB;
+    double*        _subGradiant;
 
 public:
     SubGrad();
