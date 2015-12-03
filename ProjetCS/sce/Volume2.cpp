@@ -59,9 +59,7 @@ double Volume2::greedy() {
 	return remaining.size();
 }
 
-
-//compute (UB-LB(t))/norm(g(t))^2
-double Volume2::step(int theta) {
+double Volume2::step(double theta) {
 	double norm = 0.0;
 	for (int i = 0; i < _qty; i++) {
 		norm += (_subGradiant[i] * _subGradiant[i]);
@@ -69,123 +67,178 @@ double Volume2::step(int theta) {
 	return theta * (_UB - _LB) / (norm);
 }
 
-
-
-//violation de contraintes
 double Volume2::stop() {
 	double violation = 0;
 	for (int i = 0; i < _qty; i++) {
-		violation += _pi[i] * (1 - _x[i]);
+		violation += _pi[i] * abs((1 - _x[i]));
 	}
 	return violation;
 }
 
+double Volume2::stopNorme1() {
+	double stop1 = 0;
+	for (int i = 0; i < _qty; i++) {
+		stop1 += pow((1 - _x[i]), 2);
+	}
+	return sqrt(stop1);
+}
 
+double Volume2::stopNorme2() {
+	double stop2 = 0;
+	for (int i = 0; i < _qty; i++) {
+		stop2 += pow((_bestPi[i] - _x[i]), 2);
+	}
+	return sqrt(stop2);
+}
 
-void Volume2::solve(double alpha, double epsilon, int ) {
+void Volume2::solve(double alpha, double epsilon, double theta) {
 
+	double thetha = theta;
 	cout << "hello" << endl;
+	double bestResult = 0;
+
+	double K = 0.0;
+
 	_UB = greedy();
 	cout << " UB : " << _UB << endl << endl;
 	int W = _inst->width();
 	Dynamic* knap = new Dynamic();
-
-	//pi(0) = wi/W
 	for (int i = 0; i < _qty; i++) {
 		_pi[i] = (double) _inst->data()[i]->_width / (double) W;
 	}
 
-	//compute z(0)
 	_newPattern = knap->solve(_inst, _pi);
 
-
-//compute x(t)
 	vector<double>::iterator it;
-	cout << "premier pattern : " ;
+	cout << "premier pattern : ";
 	for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
 		cout << *it << ", ";
 		_x[*it] += 1;
 	}
-	cout << endl;
 
+	K = alpha;
+	cout << endl;
 	for (int i = 0; i < _qty; i++) {
 		_subGradiant[i] = 1 - _x[i];
 	}
+	thetha *= 0.95;
+	double stepA = step(thetha);
+	cout << "Pemier StepA = " << stepA << endl;
 
-	double stepA = step(theta);
-
-	cout << "premier pi :" ;
+	cout << "premier pi :";
 	for (int i = 0; i < _qty; i++) {
+
+		_pi[i] = stepA * _subGradiant[i];
 		cout << _pi[i] << ", ";
-		_pi[i] = _pi[i] + stepA * _subGradiant[i];
 	}
 	cout << endl;
-
-	int compteur = 0;
+	int compteur = 1;
 	double arret = stop();
+	double result = 0;
+	it = _newPattern.begin();
+	while (it != _newPattern.end()) {
+		result += _pi[*it];
+		it++;
+	}
 	for (int i = 0; i < _qty; i++) {
-		if (_x[i] > 0) {
-			_LB += _pi[i] + (1 - _pi[i]) * (_x[i]);
+		_LB += _pi[i];
+	}
+	if ((1 - result) < 0) {
+		for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
+			_LB += (1 - _bestPi[*it]);
+			//_LB += (1 - result);
 		}
 	}
+	//_LB *= (1 - alpha);
 	cout << "Premier LB =  " << _LB << endl << endl;
-	_LB = 0;
+	_bestLB = _LB;
 
-
-	//Recurrence
-	while (arret > epsilon && compteur < 30) {
+	while (_LB < _UB) {
 
 		_LB = 0;
 		_newPattern = knap->solve(_inst, _pi);
 		cout << "nouveau pattern : " << endl;
-		vector<double>::iterator it;
 
-		//x(t) = alpha*x(t-1) +(1-Pi(t))*z(t)
-		for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
-			cout << *it << ", ";
-			_x[*it] += alpha * _x[*it] + (1 - alpha);
-		}
-		cout << endl;
-
-		//MAJ LB
 		for (int i = 0; i < _qty; i++) {
-			if (_x[i] > 0) {
-				_LB += _pi[i] + (1 - _pi[i]) * (_x[i]);
+			_LB += _pi[i];
+		}
+		if ((1 - result) < 0) {
+
+			for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
+				_LB += (1 - _bestPi[*it]);
 			}
 		}
-
-		//test et MAJ de LB
-		if (_LB > _bestLB) {
+		if (_LB > _bestLB && _LB < _UB) {
 			cout << "AMELIORATION, LB =  " << _LB << endl << endl;
 			_bestLB = _LB;
+
+		}
+
+		for (int i = 0; i < _qty; i++) {
+			_x[i] *= alpha;
+		}
+
+		K *= (1 - alpha);
+		vector<double>::iterator it;
+		for (it = _newPattern.begin(); it != _newPattern.end(); it++) {
+			cout << *it << ", ";
+			_x[*it] += (1 - alpha);
+		}
+
+		K += alpha;
+		cout << "K : " << K << endl;
+		cout << endl;
+		result = 0;
+		it = _newPattern.begin();
+		while (it != _newPattern.end()) {
+			result += _pi[*it];
+			it++;
+		}
+		if (result > bestResult) {
+			bestResult = result;
 			for (int i = 0; i < _qty; i++) {
 				_bestPi[i] = _pi[i];
 			}
 		}
 
-		//g(t) = 1 - x(t)
 		for (int i = 0; i < _qty; i++) {
-			cout << "x[" << i + 1 << "]" << _x[i] << " ";
+			cout << "x[" << i << "]" << _x[i] << " ";
 			_subGradiant[i] = 1 - _x[i];
 		}
 
-		cout << endl;
+		//////////////////////////
 
-
-		stepA = step(theta);
-		cout << "Pi : ";
-
-		//Pi(t+1) = PiChapo + S(t)*g(t)    with   S(t) = (UB-LB(t))/norm(g(t))^2
+		double essai = 0;
 		for (int i = 0; i < _qty; i++) {
-			cout << _pi[i] << " ,";
-			//evolution lente: pb de sub grad ???
-			_pi[i] = _bestPi[i] + stepA * _subGradiant[i];
+			essai += _x[i] + _pi[i] * _subGradiant[i];
+
+		}
+		cout << endl << "essai : " << essai << endl << endl << endl;
+		///////////////////////////
+
+		cout << endl;
+		thetha *= 0.95;
+		stepA = step(thetha);
+		cout << "Step : " << stepA << endl << endl;
+		cout << "Pi : ";
+		for (int i = 0; i < _qty; i++) {
+			if (_bestPi[i] + stepA * _subGradiant[i] < 0) {
+				_pi[i] = 0;
+			} else {
+				_pi[i] = _bestPi[i] + stepA * _subGradiant[i];
+			}
+			cout << i << ": " << _pi[i] << " ,";
 		}
 		cout << endl;
-
 		compteur++;
-		arret = stop();
-		cout << "stop :" << arret << endl;
+		//arret = stop();
+		//cout << "stop :" << arret << endl;
 	}
+	cout << "Compteur : " << compteur << endl;
+	cout << "UB : " << _UB << endl;
+	cout << "LB : " << _LB << endl;
+	cout << "BestLb : " << _bestLB<< endl;
+	cout << "K = " << K << endl;
 
 }
+

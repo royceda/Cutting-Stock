@@ -36,6 +36,7 @@ private:
 public:
     Instance();
     virtual ~Instance();
+    void manual();
     void generate();
     void generate(int itemQty, int W);
     vector<item*> & data();

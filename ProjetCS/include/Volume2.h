@@ -28,9 +28,11 @@ public:
 	virtual ~Volume2();
 
 	double greedy();
-	void solve(double alpha, double epsilon, int theta);
-	double step(int theta);
+	void solve(double alpha, double epsilon, double theta);
+	double step(double theta);
 	double stop();
+	double stopNorme1();
+	double stopNorme2();
 
 
 };

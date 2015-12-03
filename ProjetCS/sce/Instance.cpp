@@ -22,6 +22,23 @@ void Instance::generate() {
 
 }
 
+void Instance::manual(){
+	_itemQty = 12;
+	_data.push_back(new item(0,8));
+	_data.push_back(new item(1,10));
+	_data.push_back(new item(2,8));
+	_data.push_back(new item(3,10));
+	_data.push_back(new item(4,8));
+	_data.push_back(new item(5,10));
+	_data.push_back(new item(6,4));
+	_data.push_back(new item(7,4));
+	_data.push_back(new item(8,4));
+	_data.push_back(new item(9,4));
+	_data.push_back(new item(10,4));
+	_data.push_back(new item(11,4));
+	_masterWidth = 20;
+}
+
 void Instance::generate(int itemQty, int W) {
     _masterWidth = W;
     _itemQty = itemQty;
@@ -32,7 +49,7 @@ void Instance::generate(int itemQty, int W) {
     int minWidth = W / 10;
     int id = 0;
     while (qty >= 0) {
-        int width = minWidth + rand() % (W - minWidth);
+        int width = minWidth + rand() % (W/2 );
         _data.push_back(new item(id, width));
         id++;
         qty--;
